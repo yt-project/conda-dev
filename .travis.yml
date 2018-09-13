@@ -1,0 +1,19 @@
+language: c
+
+sudo: false
+
+os:
+  - linux
+  - osx
+
+env:
+  global:
+    - CONDA_DEPENDENCIES="conda-build anaconda-client"
+    - PYTHON_VERSION=3.7
+
+before_install:
+  - git clone --depth 1 https://github.com/astropy/ci-helpers.git
+  - source ci-helpers/travis/setup_conda.sh
+
+script:
+  - make build
