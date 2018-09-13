@@ -1,0 +1,47 @@
+# Adapted from
+# https://github.com/conda-forge/yt-feedstock/blob/master/recipe/meta.yaml
+
+package:
+  name: yt
+  version: {{ RECIPE_PKG_VER }}
+
+source:
+  path: {{ RECIPE_SRC_DIR }}
+
+build:
+  script_env:
+    - RECIPE_PKG_VER
+    - RECIPE_SRC_DIR
+  script: python setup.py -q install --single-version-externally-managed --record=record.txt
+  entry_points:
+    - yt = yt.utilities.command_line:run_main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - numpy 1.11.*
+    - cython >=0.24.0
+    - setuptools >=19.6
+  run:
+    - setuptools
+    - python
+    - {{ pin_compatible('numpy') }}
+    - h5py
+    - sympy
+    - matplotlib
+    - ipython
+
+test:
+  requires:
+    - nose
+  commands:
+    - yt -h
+  imports:
+    - yt
+
+about:
+  home: http://yt-project.org/
+  license: BSD 3-clause
+  summary: Analysis and visualization toolkit for volumetric data
