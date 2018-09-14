@@ -33,8 +33,7 @@ def main():
     # Only upload to Anaconda Cloud when using CI
     # This check works for most CIs including Travis CI and AppVeyor
     if os.environ['CI'].lower() == 'true':
-        # Use my personal account before the official one is set up
-        anaconda_upload(pkg_file, 'qobilidop')
+        anaconda_upload(pkg_file, 'yt-project')
 
 
 def git_clone(recipe_dir):
