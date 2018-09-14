@@ -1,4 +1,5 @@
-# Adapted from https://github.com/glue-viz/conda-dev/blob/master/appveyor.yml
+# Adapted from
+# https://github.com/glue-viz/conda-dev/blob/master/appveyor.yml
 
 environment:
   global:

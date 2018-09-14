@@ -23,7 +23,7 @@ def main():
     # Donwload source code
     src_dir = git_clone(recipe_dir)
 
-    # Set environment variables for recipe meta.yaml
+    # Set environment variables to be queried in recipe's meta.yaml
     os.environ['RECIPE_PKG_VER'] = get_pkg_ver(src_dir)
     os.environ['RECIPE_SRC_DIR'] = os.path.relpath(src_dir, recipe_dir)
 
@@ -33,7 +33,7 @@ def main():
     # Only upload to Anaconda Cloud when using CI
     # This check works for most CIs including Travis CI and AppVeyor
     if os.environ['CI'].lower() == 'true':
-        # Test with my personal account for now
+        # Use my personal account before the official one is set up
         anaconda_upload(pkg_file, 'qobilidop')
 
 
@@ -56,7 +56,7 @@ def git_clone(recipe_dir):
 
 def get_pkg_ver(src_dir):
     run_cmd = partial(check_output, shell=True, cwd=src_dir, text=True)
-    # This could be multiple lines (on Windows somehow)
+    # The output could be multiple lines (on Windows)
     # We just need the last one
     pkg_ver = run_cmd('python setup.py --version').split()[-1]
     pkg_ver = pkg_ver.strip()
