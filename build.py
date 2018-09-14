@@ -73,7 +73,6 @@ def conda_build(recipe_dir, py_ver):
     build_cmd = [
         'conda', 'build',
         '--python', py_ver,
-        '-c', 'conda-forge',
         '--old-build-string',
         recipe_dir
     ]
