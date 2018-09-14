@@ -9,7 +9,6 @@ environment:
     CONDA_DEPENDENCIES: "conda-build anaconda-client"
 
 platform:
-  - x86
   - x64
 
 install:
@@ -17,6 +16,12 @@ install:
   - powershell ci-helpers/appveyor/install-miniconda.ps1
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - activate test
+  # Solve the cl.exe missing issue with Python 2.7 x64
+  # See discussions below:
+  # https://github.com/conda/conda-build/issues/1606
+  # https://github.com/conda-forge/conda-forge-build-setup-feedstock/pull/48
+  - conda install -c conda-forge -qy vs2008_express_vc_python_patch
+  - call setup_x64
 
 build: false
 
