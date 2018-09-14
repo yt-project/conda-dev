@@ -30,10 +30,8 @@ def main():
     # Build package
     pkg_file = conda_build(recipe_dir, args.py_ver)
 
-    # Only upload to Anaconda Cloud when using CI
-    # This check works for most CIs including Travis CI and AppVeyor
-    if os.environ['CI'].lower() == 'true':
-        anaconda_upload(pkg_file, 'yt-project')
+    # Upload package
+    anaconda_upload(pkg_file, 'yt-project')
 
 
 def git_clone(recipe_dir):
@@ -82,6 +80,17 @@ def conda_build(recipe_dir, py_ver):
 
 
 def anaconda_upload(pkg_file, user):
+    # Don't upload when not using CI
+    # This check works for most CIs including Travis CI and AppVeyor
+    if not 'CI' in os.environ:
+        return
+    # Don't upload from pull requests
+    if os.environ['TRAVIS_EVENT_TYPE'] == 'pull_request':
+        return
+    if 'APPVEYOR_PULL_REQUEST_NUMBER' in os.environ:
+        return
+
+    # Now we actually want to upload
     print(f'\nUploading {pkg_file}')
     run([
         'anaconda',
