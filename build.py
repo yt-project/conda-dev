@@ -32,7 +32,7 @@ def main():
 
     # Only upload to Anaconda Cloud when using CI
     # This check works for most CIs including Travis CI and AppVeyor
-    if os.environ['CI'] == 'true':
+    if os.environ['CI'].lower() == 'true':
         # Test with my personal account for now
         anaconda_upload(pkg_file, 'qobilidop')
 
@@ -49,15 +49,17 @@ def git_clone(recipe_dir):
             'git', 'clone',
             '-b', source['git_rev'],
             '--depth', '1',
-            source['git_url'], src_dir
+            source['git_url'], str(src_dir)
         ], check=True)
     return src_dir
 
 
 def get_pkg_ver(src_dir):
     run_cmd = partial(check_output, shell=True, cwd=src_dir, text=True)
-    # Be careful with the trailing newline
-    pkg_ver = run_cmd('python setup.py --version').strip()
+    # This could be multiple lines (on Windows somehow)
+    # We just need the last one
+    pkg_ver = run_cmd('python setup.py --version').split()[-1]
+    pkg_ver = pkg_ver.strip()
     utime = run_cmd('git log -1 --pretty=format:%ct')
     chash = run_cmd('git log -1 --pretty=format:%h')
     stamp = datetime.fromtimestamp(int(utime)).strftime('%Y%m%d%H%M%S')
@@ -72,7 +74,7 @@ def conda_build(recipe_dir, py_ver):
         'conda', 'build',
         '--python', py_ver,
         '--old-build-string',
-        recipe_dir
+        str(recipe_dir)
     ]
     run(build_cmd, check=True)
     # Be careful with the trailing newline
@@ -89,7 +91,7 @@ def anaconda_upload(pkg_file, user):
         '-u', user,
         '-l', 'dev',
         '--skip',
-        pkg_file
+        str(pkg_file)
     ], check=True)
 
 

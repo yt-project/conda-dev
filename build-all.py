@@ -9,4 +9,5 @@ root = Path(__file__).parent.resolve()
 if __name__ == '__main__':
     for recipe in (root / 'recipes').glob('*'):
         for py_ver in ['2.7', '3.5', '3.6', '3.7']:
-            run([root / 'build.py', recipe, py_ver], check=True)
+            run(['python', 'build.py', str(recipe), py_ver], cwd=root,
+                check=True)
