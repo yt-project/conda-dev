@@ -16,4 +16,4 @@ before_install:
   - source ci-helpers/travis/setup_conda.sh
 
 script:
-  - make build
+  - python build-all.py

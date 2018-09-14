@@ -16,6 +16,7 @@ root = Path(__file__).parent.resolve()
 def main():
     parser = ArgumentParser()
     parser.add_argument('recipe_dir', type=Path)
+    parser.add_argument('py_ver')
     args = parser.parse_args()
     recipe_dir = args.recipe_dir.resolve()
 
@@ -26,33 +27,30 @@ def main():
     os.environ['RECIPE_PKG_VER'] = get_pkg_ver(src_dir)
     os.environ['RECIPE_SRC_DIR'] = os.path.relpath(src_dir, recipe_dir)
 
-    for py_ver in ['2.7', '3.5', '3.6']:
-        # Build package
-        pkg_file = conda_build(recipe_dir, py_ver)
+    # Build package
+    pkg_file = conda_build(recipe_dir, args.py_ver)
 
-        # Only upload when using CI
-        # This check works for most CIs including Travis CI and AppVeyor
-        if not os.environ['CI'] == 'true':
-            continue
-
-        # Upload to Anaconda Cloud
+    # Only upload to Anaconda Cloud when using CI
+    # This check works for most CIs including Travis CI and AppVeyor
+    if os.environ['CI'] == 'true':
         # Test with my personal account for now
         anaconda_upload(pkg_file, 'qobilidop')
 
 
 def git_clone(recipe_dir):
-    print(f'\nDownloading {recipe_dir.name} source code')
     with (recipe_dir / 'source.yaml').open() as f:
         source = yaml.load(f)
     repo_dir = root / 'repo'
     repo_dir.mkdir(exist_ok=True)
     src_dir = repo_dir / recipe_dir.name
-    run([
-        'git', 'clone',
-        '-b', source['git_rev'],
-        '--depth', '1',
-        source['git_url'], src_dir
-    ], check=True)
+    if not src_dir.exists():
+        print(f'\nDownloading {recipe_dir.name} source code')
+        run([
+            'git', 'clone',
+            '-b', source['git_rev'],
+            '--depth', '1',
+            source['git_url'], src_dir
+        ], check=True)
     return src_dir
 
 
