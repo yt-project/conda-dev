@@ -79,13 +79,20 @@ def conda_build(recipe_dir, py_ver):
     return pkg_file
 
 
+def check_env(name, value):
+    if (name in os.environ) and (os.environ[name] == value):
+        return True
+    else:
+        return False
+
+
 def anaconda_upload(pkg_file, user):
     # Don't upload when not using CI
     # This check works for most CIs including Travis CI and AppVeyor
     if not 'CI' in os.environ:
         return
     # Don't upload from pull requests
-    if os.environ['TRAVIS_EVENT_TYPE'] == 'pull_request':
+    if check_env('TRAVIS_EVENT_TYPE', 'pull_request'):
         return
     if 'APPVEYOR_PULL_REQUEST_NUMBER' in os.environ:
         return
