@@ -52,13 +52,13 @@ def git_clone(recipe_dir):
         '-b', source['git_rev'],
         '--depth', '1',
         source['git_url'], src_dir
-    ])
+    ], check=True)
     return src_dir
 
 
 def get_pkg_ver(src_dir):
     run_cmd = partial(check_output, shell=True, cwd=src_dir, text=True)
-    # Be careful to strip the trailing newline
+    # Be careful with the trailing newline
     pkg_ver = run_cmd('python setup.py --version').strip()
     utime = run_cmd('git log -1 --pretty=format:%ct')
     chash = run_cmd('git log -1 --pretty=format:%h')
@@ -77,8 +77,9 @@ def conda_build(recipe_dir, py_ver):
         '--old-build-string',
         recipe_dir
     ]
-    run(build_cmd)
-    pkg_file = check_output(build_cmd + ['--output'], text=True)
+    run(build_cmd, check=True)
+    # Be careful with the trailing newline
+    pkg_file = check_output(build_cmd + ['--output'], text=True).strip()
     return pkg_file
 
 
@@ -91,7 +92,7 @@ def anaconda_upload(pkg_file, user):
         '-u', user,
         '-l', 'dev',
         pkg_file
-    ])
+    ], check=True)
 
 
 if __name__ == '__main__':
