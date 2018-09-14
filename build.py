@@ -90,6 +90,7 @@ def anaconda_upload(pkg_file, user):
         'upload',
         '-u', user,
         '-l', 'dev',
+        '--skip',
         pkg_file
     ], check=True)
 
